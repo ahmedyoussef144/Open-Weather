@@ -7,8 +7,8 @@
 //
 
 import UIKit
-
-class ViewController: UIViewController
+import CoreLocation
+class ViewController: UIViewController , CLLocationManagerDelegate
 {
     //Outlet
     @IBOutlet weak var currentDate: UILabel!
@@ -21,22 +21,27 @@ class ViewController: UIViewController
     
     //Variabel
     var currentWeather : CurrentWeather!
-
+    var currenyLocation : CLLocation!
+    // Constant
+    let locationManager = CLLocationManager()
     //Function
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         currentWeather  = CurrentWeather()
-        
         loadingData.startAnimating()
         currentWeather.downloadCurrentWeather
         {
             self.updateView()
         }
         loadingData.stopAnimating()
+        callDelegates()
     }
     
+    func callDelegates()
+    {
+        locationManager.delegate = self
+    }
     func updateView ()
     {
         cityName.text = currentWeather.cityName
