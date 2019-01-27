@@ -16,12 +16,11 @@ class ViewController: UIViewController , CLLocationManagerDelegate
     @IBOutlet weak var weatherCondition: UILabel!
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var weatherImage: UIImageView!
-    
     @IBOutlet weak var loadingData: UIActivityIndicatorView!
     
     //Variabel
     var currentWeather : CurrentWeather!
-    var currenyLocation : CLLocation!
+    var currentLocation : CLLocation!
     // Constant
     let locationManager = CLLocationManager()
     //Function
@@ -30,18 +29,47 @@ class ViewController: UIViewController , CLLocationManagerDelegate
         super.viewDidLoad()
         currentWeather  = CurrentWeather()
         loadingData.startAnimating()
-        currentWeather.downloadCurrentWeather
-        {
-            self.updateView()
-        }
         loadingData.stopAnimating()
         callDelegates()
+        setupLocation()
+        locationAuthCheck()
+    }
+    
+    func locationAuthCheck()
+    {
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse
+        { // user allow
+         // get location form device
+            currentLocation = locationManager.location
+         // pass location to api
+            Location.sharedInstance.latitude =  currentLocation.coordinate.latitude
+            Location.sharedInstance.longitude =  currentLocation.coordinate.longitude
+        // download data and update ui
+            currentWeather.downloadCurrentWeather
+            {
+                    self.updateView()
+            }
+        }
+        else
+        { // user not allow
+          
+        }
+    }
+    
+    func setupLocation()
+    {
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization() // take user perm
+        locationManager.startMonitoringSignificantLocationChanges()
+
+        
     }
     
     func callDelegates()
     {
         locationManager.delegate = self
     }
+    
     func updateView ()
     {
         cityName.text = currentWeather.cityName
