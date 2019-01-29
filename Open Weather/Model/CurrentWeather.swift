@@ -16,7 +16,9 @@ class CurrentWeather
     private var _weatherCondition : String!
     private var _currentTemp : Double!
     private var _currentDate : String!
-    
+    private var _icon : String!
+    private var ICON_URL = "http://openweathermap.org/img/w/"
+    private var _weatherImage : Data!
     var cityName : String
     {
         if _cityName == nil
@@ -24,6 +26,22 @@ class CurrentWeather
             _cityName = ""
         }
         return _cityName
+    }
+    var icon : String
+    {
+        if _icon  == nil
+        {
+           _icon = ""
+        }
+        return _icon
+    }
+    var weatherImage : Data
+    {
+        if _weatherImage == nil
+        {
+            _weatherImage = Data()
+        }
+        return _weatherImage
     }
     
     var currentDate: String
@@ -52,40 +70,34 @@ class CurrentWeather
         }
         return _currentTemp
     }
+
     func downloadCurrentWeather (complete : @escaping downloadComplete)
     {
         Alamofire.request(API_URL).responseJSON
         {
-            (response) in
-            switch response.result
-            {
-            case .success :
-                let json = JSON(response.result.value)
-                self._cityName = json["name"].stringValue
-                self._weatherCondition = json["weather"][0]["main"].stringValue
-                let downloadedDate = json["dt"].doubleValue
-                self._currentDate = self.convertDate(timeInterval: downloadedDate)
-                let downloadedTemp = (json["main"]["temp"].doubleValue)
-                self._currentTemp =  floor(downloadedTemp - 272.15)
-                DispatchQueue.main.async
+                (response) in
+                switch response.result
                 {
-                    complete()
+                case .success :
+                    let json = JSON(response.result.value)
+                    self._cityName = json["name"].stringValue
+                    self._weatherCondition = json["weather"][0]["main"].stringValue
+                    let downloadedDate = json["dt"].doubleValue
+                    self._currentDate = convertDate(timeInterval: downloadedDate)
+                    let downloadedTemp = (json["main"]["temp"].doubleValue)
+                    self._currentTemp =  floor(downloadedTemp - 272.15)
+                    self._icon = json["weather"][0]["icon"].stringValue
+                    DispatchQueue.main.async
+                    {
+                        complete()
+                    }
+                case .failure(let error):
+                    print(error)
                 }
-            case .failure(let error):
-                print(error)
-            }
         }
+        
+    }
 
-    }
-    func convertDate(timeInterval : Double) -> String
-    {
-        let tempDate = Date(timeIntervalSince1970: timeInterval)
-        let dateFormater = DateFormatter()
-        dateFormater.dateStyle = .medium
-        dateFormater.timeStyle = .none
-        let date = dateFormater.string(from: tempDate)
-        return date
-    }
 }
 
 

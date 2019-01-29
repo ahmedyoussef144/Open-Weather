@@ -14,6 +14,9 @@
 		8840A32E21FB587D00577D79 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8840A32C21FB587D00577D79 /* LaunchScreen.storyboard */; };
 		8840A33D21FB7EC300577D79 /* CurrentWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840A33C21FB7EC300577D79 /* CurrentWeather.swift */; };
 		8840A34021FBAF5C00577D79 /* Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840A33F21FBAF5C00577D79 /* Extras.swift */; };
+		885F852F2200AF76003786B8 /* Extention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885F852E2200AF76003786B8 /* Extention.swift */; };
+		88B3AEE021FF5325007856B9 /* ForecastCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B3AEDF21FF5325007856B9 /* ForecastCell.swift */; };
+		88B3AEE221FF557A007856B9 /* Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B3AEE121FF557A007856B9 /* Forecast.swift */; };
 		88B9228621FDD9F800C2FEEB /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B9228521FDD9F800C2FEEB /* Location.swift */; };
 		9E47248E774489A2F03547AD /* Pods_Open_Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D03AF63DF655A28727E16271 /* Pods_Open_Weather.framework */; };
 /* End PBXBuildFile section */
@@ -29,6 +32,9 @@
 		8840A32F21FB587D00577D79 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8840A33C21FB7EC300577D79 /* CurrentWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeather.swift; sourceTree = "<group>"; };
 		8840A33F21FBAF5C00577D79 /* Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extras.swift; sourceTree = "<group>"; };
+		885F852E2200AF76003786B8 /* Extention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extention.swift; sourceTree = "<group>"; };
+		88B3AEDF21FF5325007856B9 /* ForecastCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastCell.swift; sourceTree = "<group>"; };
+		88B3AEE121FF557A007856B9 /* Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forecast.swift; sourceTree = "<group>"; };
 		88B9228521FDD9F800C2FEEB /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		D03AF63DF655A28727E16271 /* Pods_Open_Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Open_Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49DE924B8E2701D7946C950 /* Pods-Open Weather.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Open Weather.release.xcconfig"; path = "Pods/Target Support Files/Pods-Open Weather/Pods-Open Weather.release.xcconfig"; sourceTree = "<group>"; };
@@ -86,6 +92,7 @@
 			children = (
 				8840A33C21FB7EC300577D79 /* CurrentWeather.swift */,
 				88B9228521FDD9F800C2FEEB /* Location.swift */,
+				88B3AEE121FF557A007856B9 /* Forecast.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -93,6 +100,7 @@
 		8840A33621FB5AEB00577D79 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				88B3AEDF21FF5325007856B9 /* ForecastCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -108,6 +116,7 @@
 		8840A33921FB5B2400577D79 /* Extentions */ = {
 			isa = PBXGroup;
 			children = (
+				885F852E2200AF76003786B8 /* Extention.swift */,
 			);
 			path = Extentions;
 			sourceTree = "<group>";
@@ -251,10 +260,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				885F852F2200AF76003786B8 /* Extention.swift in Sources */,
 				8840A32621FB587800577D79 /* ViewController.swift in Sources */,
 				8840A33D21FB7EC300577D79 /* CurrentWeather.swift in Sources */,
+				88B3AEE221FF557A007856B9 /* Forecast.swift in Sources */,
 				88B9228621FDD9F800C2FEEB /* Location.swift in Sources */,
 				8840A34021FBAF5C00577D79 /* Extras.swift in Sources */,
+				88B3AEE021FF5325007856B9 /* ForecastCell.swift in Sources */,
 				8840A32421FB587800577D79 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
