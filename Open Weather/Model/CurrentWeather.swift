@@ -12,92 +12,86 @@ import SwiftyJSON
 
 class CurrentWeather
 {
-    private var _cityName : String!
-    private var _weatherCondition : String!
-    private var _currentTemp : Double!
-    private var _currentDate : String!
-    private var _icon : String!
-    private var ICON_URL = "http://openweathermap.org/img/w/"
-    private var _weatherImage : Data!
-    var cityName : String
-    {
-        if _cityName == nil
-        {
-            _cityName = ""
-        }
-        return _cityName
-    }
-    var icon : String
-    {
-        if _icon  == nil
-        {
-           _icon = ""
-        }
-        return _icon
-    }
-    var weatherImage : Data
-    {
-        if _weatherImage == nil
-        {
-            _weatherImage = Data()
-        }
-        return _weatherImage
-    }
-    
-    var currentDate: String
-    {
-        if _currentDate == nil
-        {
-            _currentDate = ""
-        }
-        return _currentDate
-    }
-    
-    var weatherCondition: String
-    {
-        if _weatherCondition == nil
-        {
-            _weatherCondition = ""
-        }
-        return _weatherCondition
-    }
-    
-    var currentTemp: Double
-    {
-        if _currentTemp == nil
-        {
-            _currentTemp = 0.0
-        }
-        return _currentTemp
-    }
+     var cityName : String!
+     var weatherCondition : String!
+     var currentTemp : Double!
+     var currentDate : String!
+     var icon : String!
+}
 
-    func downloadCurrentWeather (complete : @escaping downloadComplete)
+func getWeatherData(params : [String : String], complete : @escaping downloadComplete)
+{
+    var data = [CurrentWeather]()
+    Alamofire.request(API_URL, method: .get, parameters: params).responseJSON
     {
-        Alamofire.request(API_URL).responseJSON
-        {
-                (response) in
-                switch response.result
+            (response) in
+            switch response.result
+            {
+            case .success :
+                let json = JSON(response.result.value)
+                for index in 0...15
                 {
-                case .success :
-                    let json = JSON(response.result.value)
-                    self._cityName = json["name"].stringValue
-                    self._weatherCondition = json["weather"][0]["main"].stringValue
-                    let downloadedDate = json["dt"].doubleValue
-                    self._currentDate = convertDate(timeInterval: downloadedDate)
-                    let downloadedTemp = (json["main"]["temp"].doubleValue)
-                    self._currentTemp =  floor(downloadedTemp - 272.15)
-                    self._icon = json["weather"][0]["icon"].stringValue
-                    DispatchQueue.main.async
-                    {
-                        complete()
-                    }
-                case .failure(let error):
-                    print(error)
+                    let currentWeather = CurrentWeather()
+                    currentWeather.cityName = json["city"]["name"].stringValue
+                    currentWeather.weatherCondition = json["list"][index]["weather"][0]["main"].stringValue
+                    let downloadedDate = json["list"][index]["dt"].doubleValue
+                    currentWeather.currentDate = Date(timeIntervalSince1970: downloadedDate).dayOfTheWeek()
+                    let downloadedTemp = (json["list"][index]["temp"]["day"].doubleValue)
+                    currentWeather.currentTemp = floor(downloadedTemp - 272.15)
+                    currentWeather.icon = updateWeatherIcon(condition : json["list"][index]["weather"][0]["id"].intValue)
+                    data.append(currentWeather)
                 }
+                DispatchQueue.main.async
+                {
+                    complete(data)
+                }
+            case .failure(let error):
+                print(error)
+            }
+    }
+    func updateWeatherIcon(condition: Int) -> String
+    {
+        
+        switch (condition) {
+            
+        case 0...300 :
+            return "tstorm1"
+            
+        case 301...500 :
+            return "light_rain"
+            
+        case 501...600 :
+            return "shower3"
+            
+        case 601...700 :
+            return "snow4"
+            
+        case 701...771 :
+            return "fog"
+            
+        case 772...799 :
+            return "tstorm3"
+            
+        case 800 :
+            return "sunny"
+            
+        case 801...804 :
+            return "cloudy2"
+            
+        case 900...903, 905...1000  :
+            return "tstorm3"
+            
+        case 903 :
+            return "snow5"
+            
+        case 904 :
+            return "sunny"
+            
+        default :
+            return "dunno"
         }
         
     }
-
 }
 
 

@@ -8,10 +8,8 @@
 
 import UIKit
 import CoreLocation
-import Alamofire
-import SwiftyJSON
 
-class ViewController: UIViewController , CLLocationManagerDelegate
+class ViewController: UIViewController , CLLocationManagerDelegate ,UITableViewDelegate , UITableViewDataSource
 {
     //Outlet
     @IBOutlet weak var currentDate: UILabel!
@@ -19,119 +17,90 @@ class ViewController: UIViewController , CLLocationManagerDelegate
     @IBOutlet weak var weatherCondition: UILabel!
     @IBOutlet weak var cityName: UILabel!
     @IBOutlet weak var weatherImage: UIImageView!
-    @IBOutlet weak var forcastTable: UITableView!
-    
+    @IBOutlet weak var forecastTabel: UITableView!
+ 
     //Variabel
-    var currentWeather : CurrentWeather!
+    var currentWeather = [CurrentWeather]()
     var currentLocation : CLLocation!
-    var forecast : [Forecast]!
+    var params : [String : String] = ["appid":Token_key,"cnt":Num_Day]
     // Constant
     let locationManager = CLLocationManager()
     //Function
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        currentWeather  = CurrentWeather()
-        forecast = [Forecast]()
         callDelegates()
         setupLocation()
-        
     }
-    override func viewDidAppear(_ animated: Bool)
+
+    func callDelegates()
     {
-        locationAuthCheck()
-    }
-    func locationAuthCheck()
-    {
-        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse
-        { // user allow
-         // get location form device
-            currentLocation = locationManager.location
-         // pass location to api
-            Location.sharedInstance.latitude =  currentLocation.coordinate.latitude
-            Location.sharedInstance.longitude =  currentLocation.coordinate.longitude
-            print (Location.sharedInstance.latitude
-            )
-        // download data and update ui
-            currentWeather.downloadCurrentWeather
-            {
-                self.updateView()
-            }
-            downloadForecast()
-        }
-        else
-        { // user not allow
-          locationAuthCheck()
-        }
+        locationManager.delegate = self
+        forecastTabel.delegate = self
+        forecastTabel.dataSource = self
     }
     
     func setupLocation()
     {
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         locationManager.requestWhenInUseAuthorization() // take user perm
-        locationManager.startMonitoringSignificantLocationChanges()
+        locationManager.startUpdatingLocation()
     }
     
-    func callDelegates()
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation])
     {
-        locationManager.delegate = self
-        forcastTable.delegate = self
-        forcastTable.dataSource = self
-    }
-    
-    func updateView ()
-    {
-        cityName.text = currentWeather.cityName
-        currentTemp.text = "\(Int(currentWeather.currentTemp))˚"
-        currentDate.text = currentWeather.currentDate
-        weatherCondition.text = currentWeather.weatherCondition
-        //weatherImage.image = UIImage(data: currentWeather.weatherImage)
-    }
-    
-    func downloadForecast ()
-    {
-        Alamofire.request(FORECAST_API_URL).responseJSON
+        let location = locations[locations.count - 1 ]
+        if location.horizontalAccuracy > 0
+        {
+            locationManager.stopUpdatingLocation()
+  
+            params["lat"] = "\(location.coordinate.latitude)"
+            params["lon"] = "\(location.coordinate.longitude)"
+            getWeatherData(params: params, complete:
             {
-                (response) in
-                switch response.result
-                {
-                case .success :
-                    let json = JSON(response.result.value)
-                    for index in 1...15
-                    {
-                        let date = json["list"][index]["dt"].doubleValue
-                        var dayOfTheWeek = Date(timeIntervalSince1970: date).dayOfTheWeek()
-                        let temp = floor(json["list"][index]["temp"]["day"].doubleValue - 273.15)
-                        self.forecast.append(Forecast(forecastDate: dayOfTheWeek , forecastTemp: temp))
-                    }
-                    self.forcastTable.reloadData()
-                case .failure(let error):
-                    print(error)
-                }
+                (data) in
+                self.updateView(weather: data[0])
+                self.currentWeather = data
+                self.forecastTabel.reloadData()
+            })
         }
+
     }
-}
-extension ViewController : UITableViewDelegate , UITableViewDataSource
-{
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error)
+    {
+        print(error)
+        cityName.text = " Location Unavailabel"
+    }
+    func updateView (weather : CurrentWeather)
+    {
+        cityName.text = weather.cityName
+        currentTemp.text = "\(Int(weather.currentTemp!))˚"
+        currentDate.text = weather.currentDate
+        weatherCondition.text = weather.weatherCondition
+        weatherImage.image = UIImage(named: weather.icon)
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
     {
-        return forecast.count
+        return currentWeather.count - 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
     {
-        if let cell = forcastTable.dequeueReusableCell(withIdentifier: "ForecastCell") as? ForecastCell
+        if let cell = forecastTabel.dequeueReusableCell(withIdentifier: "ForecastCell") as? ForecastTabelCell
         {
-            
-            cell.updataForecastCell(forecast: (forecast[indexPath.row]))
+            cell.updateForecastCell(weather: currentWeather[indexPath.row + 1])
             return cell
         }
         else
         {
-            return ForecastCell()
+            return ForecastTabelCell()
         }
+        
     }
-    
 }
+
+
+
 
 

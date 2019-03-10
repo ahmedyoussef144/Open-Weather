@@ -28,10 +28,9 @@ class ForecastCell: UITableViewCell
         // Configure the view for the selected state
     }
     
-    func updataForecastCell(forecast : Forecast)
+    func updataForecastCell()
     {
-        forcastTemp.text = "\(Int(forecast.forecastTemp))˚"
-        forecastDate.text = forecast.forecastDate
+     
     }
 
 }
